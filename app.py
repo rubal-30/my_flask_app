@@ -32,18 +32,20 @@ def fetch_csv_from_github(repo_url):
 
 @app.route('/analyze_sentiment/<fort_name>', methods=['GET'])
 def analyze_sentiment(fort_name):
-    repo_url = f'https://raw.githubusercontent.com/rubal-30/my_flask_app/main/{fort_name}.csv'
+    repo_url = f'https://raw.githubusercontent.com/rubal-30/my_flask_app/main/{fort_name}.csv'  # Update if necessary
 
     try:
         df = fetch_csv_from_github(repo_url)
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-    df['clean_review'] = df['Description'].apply(preprocess_text)
+    df['clean_review'] = df['wiI7pd'].apply(preprocess_text)
     df['sentiment'] = df['clean_review'].apply(lambda x: TextBlob(str(x)).sentiment.polarity)
     mean_sentiment = df['sentiment'].mean()
 
-    if mean_sentiment >= 0.5:
+    if (mean_sentiment is None):
+        overall_sentiment = 'unknown'
+    elif mean_sentiment >= 0.5:
         overall_sentiment = 'easy'
     elif mean_sentiment >= 0:
         overall_sentiment = 'moderate'
