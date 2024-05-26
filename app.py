@@ -6,6 +6,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import nltk
 import requests
+import io
 
 nltk.download('stopwords')
 nltk.download('punkt')
@@ -27,18 +28,18 @@ def fetch_csv_from_github(repo_url):
     response = requests.get(repo_url)
     response.raise_for_status()  # Ensure we notice bad responses
     data = response.content.decode('utf-8')
-    return pd.read_csv(pd.compat.StringIO(data))
+    return pd.read_csv(io.StringIO(data))
 
 @app.route('/analyze_sentiment/<fort_name>', methods=['GET'])
 def analyze_sentiment(fort_name):
-    repo_url = f'https://raw.githubusercontent.com/your-username/your-repo/main/{fort_name}.csv'
+    repo_url = f'https://raw.githubusercontent.com/rubal-30/my_flask_app/main/{fort_name}.csv'
 
     try:
         df = fetch_csv_from_github(repo_url)
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-    df['clean_review'] = df['wiI7pd'].apply(preprocess_text)
+    df['clean_review'] = df['Description'].apply(preprocess_text)
     df['sentiment'] = df['clean_review'].apply(lambda x: TextBlob(str(x)).sentiment.polarity)
     mean_sentiment = df['sentiment'].mean()
 
